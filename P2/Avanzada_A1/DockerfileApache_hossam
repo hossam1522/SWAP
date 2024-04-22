@@ -1,0 +1,17 @@
+# Usa una imagen base de Linux
+FROM ubuntu:latest
+
+# Configura la zona horaria
+ENV TZ=Europe/Madrid
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ>/etc/timezone
+
+# Actualiza el sistema e instala Apache, PHP y herramientas de red
+RUN apt-get update && \
+    apt-get install -y apache2 php php-cli iputils-ping net-tools
+
+# Configura Apache para que esté disponible en el puerto 80
+EXPOSE 80
+
+# Inicia el servicio de Apache al iniciar el contenedor
+CMD ["apachectl", "-D", "FOREGROUND"]
+

@@ -1,0 +1,8 @@
+# Usa una imagen base adecuada, por ejemplo, Alpine Linux
+FROM haproxy:latest
+
+# Expone el puerto en el que HAProxy escuchará las solicitudes
+EXPOSE 80
+
+# Comando para iniciar HAProxy cuando se ejecute el contenedor
+CMD ["haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]

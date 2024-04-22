@@ -1,0 +1,8 @@
+# Usa la imagen oficial de Nginx desde Docker Hub
+FROM nginx:latest
+
+# Expone el puerto 80 para que las solicitudes web puedan llegar al contenedor
+EXPOSE 80
+
+# Comando para iniciar el servidor Nginx cuando se ejecute el contenedor
+CMD ["nginx", "-g", "daemon off;"]

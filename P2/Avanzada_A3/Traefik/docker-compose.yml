@@ -13,20 +13,22 @@ services:
 
   creacion_imagen_balanceador:
     build:
-      context: ./P2-hossam-nginx
-      dockerfile: DockerfileNginx
-    image: hossam-nginx-image:p2
+      context: ./P2-hossam-traefik
+      dockerfile: DockerfileTraefik
+    image: hossam-traefik-image:p2
     scale: 0
     networks:
       - red_web
 
   balanceador:
-    image: hossam-nginx-image:p2
+    image: hossam-traefik-image:p2
     container_name: balanceador
     volumes:
-      - ./P2-hossam-nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./P2-hossam-traefik/traefik.yml:/etc/traefik/traefik.yml
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "80:80"
+      - "8080:8080"
     depends_on:
       - web1
       - web2
@@ -44,7 +46,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web1
     volumes:
-      - ./P2-hossam-nginx/web_hossam:/var/www/html
+      - ./P2-hossam-traefik/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.2
@@ -55,7 +57,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web2
     volumes:
-      - ./P2-hossam-nginx/web_hossam:/var/www/html
+      - ./P2-hossam-traefik/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.3
@@ -66,7 +68,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web3
     volumes:
-      - ./P2-hossam-nginx/web_hossam:/var/www/html
+      - ./P2-hossam-traefik/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.4
@@ -77,7 +79,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web4
     volumes:
-      - ./P2-hossam-nginx/web_hossam:/var/www/html
+      - ./P2-hossam-traefik/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.5
@@ -88,7 +90,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web5
     volumes:
-      - ./P2-hossam-nginx/web_hossam:/var/www/html
+      - ./P2-hossam-traefik/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.6
@@ -99,7 +101,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web6
     volumes:
-      - ./P2-hossam-nginx/web_hossam:/var/www/html
+      - ./P2-hossam-traefik/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.7
@@ -110,7 +112,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web7
     volumes:
-      - ./P2-hossam-nginx/web_hossam:/var/www/html
+      - ./P2-hossam-traefik/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.8
@@ -121,7 +123,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web8
     volumes:
-      - ./P2-hossam-nginx/web_hossam:/var/www/html
+      - ./P2-hossam-traefik/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.9
@@ -131,12 +133,14 @@ services:
 networks:
   red_web:
       name: red_web
+      #external: true
       driver: bridge
       ipam:
         config:
           - subnet: 192.168.10.0/24
   red_servicios:
       name: red_servicios
+      #external: true
       driver: bridge
       ipam:
         config:

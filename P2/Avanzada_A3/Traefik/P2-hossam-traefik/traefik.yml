@@ -1,0 +1,41 @@
+# Archivo de configuración de Traefik
+
+# Configuración de entrada (entrypoints)
+entryPoints:
+  http:
+    address: ":80"
+  dashboard:
+    address: ":8080"
+
+# Configuración de los proveedores (providers)
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false  # Solo exponer contenedores etiquetados explícitamente para Traefik
+
+# Configuración de enrutamiento y balanceo de carga
+http:
+  routers:
+    round-robin-router:
+      rule: "Host(`*`)"
+      service: "round-robin-service"
+      entryPoints:
+        - "http"
+    traefik-dashboard:
+      rule: "PathPrefix(`/dashboard`)"
+      service: "api@internal"
+      entryPoints:
+        - "dashboard"
+  services:
+    round-robin-service:
+      loadBalancer:
+        roundRobin: {}
+        servers:
+          - url: "http://192.168.10.2:80" 
+          - url: "http://192.168.10.3:80" 
+          - url: "http://192.168.10.4:80" 
+          - url: "http://192.168.10.5:80" 
+          - url: "http://192.168.10.6:80" 
+          - url: "http://192.168.10.7:80" 
+          - url: "http://192.168.10.8:80" 
+          - url: "http://192.168.10.9:80" 

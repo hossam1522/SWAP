@@ -1,0 +1,6 @@
+# Usa la imagen oficial de Nginx desde Docker Hub
+FROM traefik:latest
+
+# Expone el puerto 80 para que las solicitudes web puedan llegar al contenedor
+EXPOSE 80
+
