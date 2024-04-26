@@ -1,0 +1,10 @@
+FROM caddy:latest
+
+WORKDIR /app
+
+# Expose the Caddy admin port (optional)
+EXPOSE 80
+
+# Formatea el Caddyfile
+RUN caddy fmt --overwrite /etc/caddy/Caddyfile
+

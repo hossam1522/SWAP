@@ -1,0 +1,22 @@
+{
+	# Configuraciones globales, si es necesario
+}
+
+# Definición del sitio
+:80 {
+	# Configuración específica del sitio
+
+	# Balanceador de carga
+	reverse_proxy {
+		# Lista de direcciones IP para balancear
+		lb_policy round_robin
+		to 192.168.10.2:80
+		to 192.168.10.3:80
+		to 192.168.10.4:80
+		to 192.168.10.5:80
+		to 192.168.10.6:80
+		to 192.168.10.7:80
+		to 192.168.10.8:80
+		to 192.168.10.9:80
+	}
+}

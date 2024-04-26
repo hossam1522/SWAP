@@ -13,23 +13,23 @@ services:
 
   creacion_imagen_balanceador:
     build:
-      context: ./P2-hossam-traefik
-      dockerfile: DockerfileTraefik
-    image: hossam-traefik-image:p2
+      context: ./P2-hossam-caddy
+      dockerfile: DockerfileCaddy
+    image: hossam-caddy-image:p2
     scale: 0
     networks:
       - red_web
 
   balanceador:
-    image: hossam-traefik-image:p2
-    #image: traefik:v2.4
+    image: hossam-caddy-image:p2
     container_name: balanceador
     volumes:
-      - ./P2-hossam-traefik/traefik.yml:/etc/traefik/traefik.yml
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ./P2-hossam-caddy/Caddyfile:/etc/caddy/Caddyfile
+    entrypoint: 
+      ["/bin/sh", "-c", "caddy fmt --overwrite /etc/caddy/Caddyfile && 
+      caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"]
     ports:
       - "80:80"
-      - "8080:8080"
     depends_on:
       - web1
       - web2
@@ -39,10 +39,6 @@ services:
       - web6
       - web7
       - web8
-    #labels:
-    #  - "traefik.enable=true"
-    #  - "traefik.http.routers.whoami.rule=Host(`*`)"
-    #  - "traefik.http.routers.whoami.entrypoints=http,dashboard"
     networks:
       red_web: 
         ipv4_address: 192.168.10.50
@@ -51,7 +47,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web1
     volumes:
-      - ./P2-hossam-traefik/web_hossam:/var/www/html
+      - ./P2-hossam-caddy/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.2
@@ -62,7 +58,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web2
     volumes:
-      - ./P2-hossam-traefik/web_hossam:/var/www/html
+      - ./P2-hossam-caddy/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.3
@@ -73,7 +69,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web3
     volumes:
-      - ./P2-hossam-traefik/web_hossam:/var/www/html
+      - ./P2-hossam-caddy/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.4
@@ -84,7 +80,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web4
     volumes:
-      - ./P2-hossam-traefik/web_hossam:/var/www/html
+      - ./P2-hossam-caddy/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.5
@@ -95,7 +91,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web5
     volumes:
-      - ./P2-hossam-traefik/web_hossam:/var/www/html
+      - ./P2-hossam-caddy/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.6
@@ -106,7 +102,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web6
     volumes:
-      - ./P2-hossam-traefik/web_hossam:/var/www/html
+      - ./P2-hossam-caddy/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.7
@@ -117,7 +113,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web7
     volumes:
-      - ./P2-hossam-traefik/web_hossam:/var/www/html
+      - ./P2-hossam-caddy/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.8
@@ -128,7 +124,7 @@ services:
     image: hossam-apache-image:p2
     container_name: web8
     volumes:
-      - ./P2-hossam-traefik/web_hossam:/var/www/html
+      - ./P2-hossam-caddy/web_hossam:/var/www/html
     networks:
       red_web: 
         ipv4_address: 192.168.10.9
