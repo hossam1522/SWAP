@@ -1,17 +1,4 @@
 # Archivo de configuración de Traefik
-
-# Configuración de entrada (entrypoints)
-#entryPoints:
-#  http:
-#    address: ":80"
-#  dashboard:
-#    address: ":8080"
-#
-## Configuración de los proveedores (providers)
-#providers:
-#  docker:
-#    endpoint: "unix:///var/run/docker.sock"
-#    exposedByDefault: false  # Solo exponer contenedores etiquetados explícitamente para Traefik
 providers:
  file:
   watch: true
@@ -25,13 +12,9 @@ http:
     apache:
       rule: "Host(`localhost`)"
       service: "apache"
-      #entryPoints:
-      #  - "http"
     traefik-dashboard:
       rule: "PathPrefix(`/dashboard`)"
       service: "api@internal"
-      #entryPoints:
-      #  - "dashboard"
   services:
     apache:
       loadBalancer:
@@ -44,4 +27,3 @@ http:
           - url: http://192.168.10.7:80/
           - url: http://192.168.10.8:80/
           - url: http://192.168.10.9:80/
-        #passHostHeader: true
