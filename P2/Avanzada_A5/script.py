@@ -3,6 +3,7 @@
 import docker
 import subprocess
 import shutil
+import os
 
 # Configura el cliente de Docker
 client = docker.from_env()
@@ -58,14 +59,25 @@ def create_new_web_server():
     # Ejemplo: crea un nuevo contenedor de servidor web utilizando la imagen hossam-apache-image:p2
     available_ip = get_available_ip()
     if available_ip:
+        # Define la ruta del volumen en el host y en el contenedor
+        current_directory = os.getcwd()
+        host_volume_path = "P2-hossam-nginx/web_hossam"
+        container_volume_path = "/var/www/html"
+
         # Crea el contenedor sin conectarlo a ninguna red
-        new_container = client.containers.create("hossam-apache-image:p2", detach=True)
+        new_container = client.containers.create("hossam-apache-image:p2", detach=True, volumes={os.path.join(current_directory, host_volume_path): {'bind': container_volume_path, 'mode': 'rw'}})
+
+        # Obtiene la red
+        network = client.networks.get('red_web')
 
         # Conecta el contenedor a la red
-        client.networks.get('red_web').connect(new_container)
+        network.connect(new_container, ipv4_address=available_ip)
 
-        # Ejecuta un comando dentro del contenedor para configurar la dirección IP
+        #Ejecuta un comando dentro del contenedor para configurar la dirección IP
         command = f'ifconfig eth0 {available_ip} netmask 255.255.255.0'
+
+        # Inicia el contenedor
+        new_container.start()
         new_container.exec_run(command)
 
         #return new_container.id
@@ -96,6 +108,22 @@ def restore_nginx_conf_from_backup():
 
 # Función para ajustar la configuración del balanceador de carga en nginx.conf
 def adjust_load_balancer_config():
+
+    # Verificar si el contenedor del balanceador está corriendo
+    balanceador_running = False
+    for container in client.containers.list():
+        if container.name == "balanceador":
+            balanceador_running = True
+            break
+
+    # Si el balanceador no está corriendo, detener y eliminar todos los contenedores y restaurar el archivo nginx.conf desde el archivo de respaldo
+    if not balanceador_running:
+        for container in client.containers.list():
+            container.stop()
+            container.remove()
+        restore_nginx_conf_from_backup()
+        return
+
     average_cpu_usage = calculate_average_cpu_usage()
     # Si no se detecta ningún contenedor, restaura el archivo nginx.conf desde el archivo de respaldo
     if average_cpu_usage == 0:
@@ -135,9 +163,6 @@ def adjust_load_balancer_config():
 
         # Luego, recarga la configuración del balanceador de carga (asumiendo que Nginx se está utilizando como balanceador de carga)
         subprocess.run(["sudo","docker", "exec", "balanceador", "nginx", "-s", "reload"])
-        # Recarga el contenedor del balanceador de carga
-        #balanceador = client.containers.get("balanceador")
-        #balanceador.restart()
 
 # Ejecuta la función para ajustar la configuración del balanceador de carga
 adjust_load_balancer_config()
