@@ -1,0 +1,8 @@
+# Usa la imagen oficial de Nginx desde Docker Hub
+FROM nginx:latest
+
+# Exponer el puerto 443 para el tráfico HTTPS
+EXPOSE 443
+
+# Comando para iniciar el servidor Nginx cuando se ejecute el contenedor
+CMD ["nginx", "-g", "daemon off;"]
