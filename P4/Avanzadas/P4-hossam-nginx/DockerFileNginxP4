@@ -1,0 +1,21 @@
+# Usa la imagen oficial de Nginx desde Docker Hub
+FROM nginx:latest
+
+# Instalar iptables
+RUN apt-get update && apt-get install -y iptables
+
+# Copiar script de entrada entrypoint y script de reglas iptables
+COPY ./entrypoint.sh /entrypoint.sh
+COPY ./P4-hossam-iptables-web/hossam-iptables-web.sh /hossam-iptables-web.sh
+
+# Dar permisos de ejecución a los scripts
+RUN chmod +x /entrypoint.sh /hossam-iptables-web.sh
+
+# Configurar el script de entrada
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Exponer el puerto 443 para el tráfico HTTPS
+EXPOSE 443
+
+# Comando para iniciar el servidor Nginx cuando se ejecute el contenedor
+CMD ["nginx", "-g", "daemon off;"]

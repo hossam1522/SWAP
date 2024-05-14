@@ -1,0 +1,171 @@
+version: '3.9'
+
+services:
+  creacion_imagen_web:
+    build:
+      context: ./P4-hossam-apache
+      dockerfile: DockerFileApacheP4
+    image: hossam-apache-image:p4
+    scale: 0
+    networks:
+      - red_web
+      - red_servicios
+
+  creacion_imagen_balanceador:
+    build:
+      context: ./P4-hossam-nginx
+      dockerfile: DockerFileNginxP4
+    image: hossam-nginx-image:p4
+    scale: 0
+    networks:
+      - red_web
+
+  balanceador:
+    image: hossam-nginx-image:p4
+    container_name: balanceador
+    volumes:
+      - ./P4-hossam-nginx/hossam-nginx-ssl.conf:/etc/nginx/nginx.conf
+      - ./P4-hossam-certificados:/etc/nginx/ssl
+    ports:
+      - "443:443"
+    depends_on:
+      - web1
+      - web2
+      - web3
+      - web4
+      - web5
+      - web6
+      - web7
+      - web8
+    networks:
+      red_web: 
+        ipv4_address: 192.168.10.50
+    cap_add:
+      - NET_ADMIN
+
+  web1:
+    image: hossam-apache-image:p4
+    container_name: web1
+    volumes:
+      - ./web_hossam:/var/www/html
+      - ./P4-hossam-certificados:/etc/apache2/ssl
+    networks:
+      red_web: 
+        ipv4_address: 192.168.10.2
+      red_servicios:
+        ipv4_address: 192.168.20.2
+    cap_add:
+      - NET_ADMIN
+
+  web2:
+    image: hossam-apache-image:p4
+    container_name: web2
+    volumes:
+      - ./web_hossam:/var/www/html
+      - ./P4-hossam-certificados:/etc/apache2/ssl
+    networks:
+      red_web: 
+        ipv4_address: 192.168.10.3
+      red_servicios:
+        ipv4_address: 192.168.20.3
+    cap_add:
+      - NET_ADMIN
+
+  web3:
+    image: hossam-apache-image:p4
+    container_name: web3
+    volumes:
+      - ./web_hossam:/var/www/html
+      - ./P4-hossam-certificados:/etc/apache2/ssl
+    networks:
+      red_web: 
+        ipv4_address: 192.168.10.4
+      red_servicios:
+        ipv4_address: 192.168.20.4
+    cap_add:
+      - NET_ADMIN
+
+  web4:
+    image: hossam-apache-image:p4
+    container_name: web4
+    volumes:
+      - ./web_hossam:/var/www/html
+      - ./P4-hossam-certificados:/etc/apache2/ssl
+    networks:
+      red_web: 
+        ipv4_address: 192.168.10.5
+      red_servicios:
+        ipv4_address: 192.168.20.5
+    cap_add:
+      - NET_ADMIN
+
+  web5:
+    image: hossam-apache-image:p4
+    container_name: web5
+    volumes:
+      - ./web_hossam:/var/www/html
+      - ./P4-hossam-certificados:/etc/apache2/ssl
+    networks:
+      red_web: 
+        ipv4_address: 192.168.10.6
+      red_servicios:
+        ipv4_address: 192.168.20.6
+    cap_add:
+      - NET_ADMIN
+
+  web6:
+    image: hossam-apache-image:p4
+    container_name: web6
+    volumes:
+      - ./web_hossam:/var/www/html
+      - ./P4-hossam-certificados:/etc/apache2/ssl
+    networks:
+      red_web: 
+        ipv4_address: 192.168.10.7
+      red_servicios:
+        ipv4_address: 192.168.20.7
+    cap_add:
+      - NET_ADMIN
+
+  web7:
+    image: hossam-apache-image:p4
+    container_name: web7
+    volumes:
+      - ./web_hossam:/var/www/html
+      - ./P4-hossam-certificados:/etc/apache2/ssl
+    networks:
+      red_web: 
+        ipv4_address: 192.168.10.8
+      red_servicios:
+        ipv4_address: 192.168.20.8
+    cap_add:
+      - NET_ADMIN
+
+  web8:
+    image: hossam-apache-image:p4
+    container_name: web8
+    volumes:
+      - ./web_hossam:/var/www/html
+      - ./P4-hossam-certificados:/etc/apache2/ssl
+    networks:
+      red_web: 
+        ipv4_address: 192.168.10.9
+      red_servicios:
+        ipv4_address: 192.168.20.9
+    cap_add:
+      - NET_ADMIN
+
+networks:
+  red_web:
+      name: red_web
+      driver: bridge
+      ipam:
+        config:
+          - subnet: 192.168.10.0/24
+  red_servicios:
+      name: red_servicios
+      driver: bridge
+      ipam:
+        config:
+          - subnet: 192.168.20.0/24
+
