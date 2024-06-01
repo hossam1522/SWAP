@@ -1,0 +1,37 @@
+# Usa una imagen base de Linux
+FROM ubuntu:latest
+
+# Configura la zona horaria
+ENV TZ=Europe/Madrid
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ>/etc/timezone
+
+# Actualiza el sistema e instala Apache, PHP y herramientas de red
+RUN apt-get update && \
+    apt-get install -y apache2 php php-cli iputils-ping net-tools iptables
+
+# Instalar los módulos necesarios de Apache para soportar SSL
+RUN apt-get install -y openssl
+
+# Activar SSL y crear un directorio para los archivos de certificado y clave privada
+RUN mkdir /etc/apache2/ssl
+
+# Habilitar el módulo SSL y configurar el host virtual para SSL
+RUN a2enmod ssl
+RUN a2ensite default-ssl
+
+# Copiar script de entrada entrypoint y script de reglas iptables
+COPY ./entrypoint.sh /entrypoint.sh
+COPY ./P4-hossam-iptables-web/hossam-iptables-web.sh /hossam-iptables-web.sh
+
+# Dar permisos de ejecución a los scripts
+RUN chmod +x /entrypoint.sh /hossam-iptables-web.sh
+
+# Configurar el script de entrada
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Exponer el puerto 443 para tráfico HTTPS
+EXPOSE 443 80
+
+# Inicia el servicio de Apache al iniciar el contenedor
+CMD ["apachectl", "-D", "FOREGROUND"]
+
