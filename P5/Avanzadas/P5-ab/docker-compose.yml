@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  apache-benchmark-P5:
+    build:
+      context: .
+      dockerfile: DockerFileAB
+    image: hossam-ab-image:p5
+    container_name: apache_benchmark-P5
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.60
+
+networks:
+  red_web:
+    external: true

@@ -1,0 +1,203 @@
+version: '3.9'
+
+services:
+  creacion_imagen_web:
+    build:
+      context: ./P4-hossam-apache
+      dockerfile: DockerFileApacheP4
+    image: hossam-apache-image:p4
+    scale: 0
+    networks:
+      - red_web
+      - red_servicios
+
+  creacion_imagen_balanceador:
+    build:
+      context: ./P4-hossam-nginx
+      dockerfile: DockerFileNginxP4
+    image: hossam-nginx-image:p4
+    scale: 0
+    networks:
+      - red_web
+
+  balanceador:
+    image: hossam-nginx-image:p4
+    container_name: balanceador
+    volumes:
+      - ./P4-hossam-nginx/hossam-nginx-ssl.conf:/etc/nginx/nginx.conf
+      - ./P4-hossam-certificados:/etc/nginx/ssl
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      - wordpress1
+      - wordpress2
+      - wordpress3
+      - wordpress4
+      - wordpress5
+      - wordpress6
+      - wordpress7
+      - wordpress8
+    networks:
+      red_web: 
+        ipv4_address: 192.168.10.50
+
+  wordpress1:
+    build: 
+      context: ./P5-hossam-wordpress
+      dockerfile: DockerFileWP
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.10
+      red_servicios:
+        ipv4_address: 192.168.20.10
+    depends_on:
+      - db
+
+  wordpress2:
+    build: 
+      context: ./P5-hossam-wordpress
+      dockerfile: DockerFileWP
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.11
+      red_servicios:
+        ipv4_address: 192.168.20.11
+    depends_on:
+      - db
+
+  wordpress3:
+    build: 
+      context: ./P5-hossam-wordpress
+      dockerfile: DockerFileWP
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.12
+      red_servicios:
+        ipv4_address: 192.168.20.12
+    depends_on:
+      - db
+
+  wordpress4:
+    build: 
+      context: ./P5-hossam-wordpress
+      dockerfile: DockerFileWP
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.13
+      red_servicios:
+        ipv4_address: 192.168.20.13
+    depends_on:
+      - db
+
+  wordpress5:
+    build: 
+      context: ./P5-hossam-wordpress
+      dockerfile: DockerFileWP
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.14
+      red_servicios:
+        ipv4_address: 192.168.20.14
+    depends_on:
+      - db
+
+  wordpress6:
+    build: 
+      context: ./P5-hossam-wordpress
+      dockerfile: DockerFileWP
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.15
+      red_servicios:
+        ipv4_address: 192.168.20.15
+    depends_on:
+      - db
+
+  wordpress7:
+    build: 
+      context: ./P5-hossam-wordpress
+      dockerfile: DockerFileWP
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.16
+      red_servicios:
+        ipv4_address: 192.168.20.16
+    depends_on:
+      - db
+
+  wordpress8:
+    build: 
+      context: ./P5-hossam-wordpress
+      dockerfile: DockerFileWP
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.17
+      red_servicios:
+        ipv4_address: 192.168.20.17
+    depends_on:
+      - db
+
+  db:
+    build: 
+      context: ./P5-hossam-wordpress
+      dockerfile: DockerFileSQL
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      red_servicios:
+        ipv4_address: 192.168.20.50
+
+volumes:
+  db_data:
+
+networks:
+  red_web:
+    external: true
+  red_servicios:
+      name: red_servicios
+      driver: bridge
+      ipam:
+        config:
+          - subnet: 192.168.20.0/24
+

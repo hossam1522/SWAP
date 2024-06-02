@@ -1,0 +1,14 @@
+# Usa la imagen oficial de MySQL como base
+FROM mysql:5.7
+
+# Copia el script de inicialización a la ubicación adecuada en el contenedor
+COPY init.sh /docker-entrypoint-initdb.d/
+
+# Establece permisos de ejecución para el script
+RUN chmod +x /docker-entrypoint-initdb.d/init.sh
+
+# Establece variables de entorno para la configuración de MySQL
+ENV MYSQL_ROOT_PASSWORD=somewordpress
+ENV MYSQL_DATABASE=wordpress
+ENV MYSQL_USER=wordpress
+ENV MYSQL_PASSWORD=wordpress

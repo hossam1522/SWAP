@@ -1,0 +1,27 @@
+# Usa la imagen oficial de WordPress como base
+FROM wordpress:latest
+
+# Instalamos algunas dependencias adicionales si es necesario
+RUN apt-get update && apt-get install -y \
+    less \
+    vim \
+    wget \
+    default-mysql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+&& chmod +x wp-cli.phar \
+&& mv wp-cli.phar /usr/local/bin/wp
+
+# Exponer el puerto 80
+EXPOSE 80
+
+# Copia el script de configuración a la imagen
+COPY setup-wordpress.sh /usr/local/bin/
+
+# Establece permisos de ejecución para el script
+RUN chmod +x /usr/local/bin/setup-wordpress.sh
+
+# Establece el script de configuración como el comando de entrada
+ENTRYPOINT ["setup-wordpress.sh"]
+CMD ["apache2-foreground"]
